@@ -1,0 +1,11 @@
+
+2026-02-10 22:58:34,929 - INFO - System Health Check:
+CPU: 69.4%, 
+RAM: 88.0%, 
+Disk: 36.1%
+2026-02-10 22:58:34,929 - WARNING - High RAM usage detected: 88.0%
+2026-02-10 23:05:40,149 - INFO - System Health Check:
+CPU: 54.2%, 
+RAM: 86.5%, 
+Disk: 36.1%
+2026-02-10 23:05:40,149 - WARNING - High RAM usage detected: 86.5%
