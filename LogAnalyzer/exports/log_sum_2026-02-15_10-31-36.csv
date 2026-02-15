@@ -1,0 +1,2 @@
+Information,Warnings,Errors,Frequent_warnings,Top 5 Warnings,Anomalies
+3,3,0,High RAM usage detected: 88.2%,"[('High RAM usage detected: 88.2%', 1), ('High RAM usage detected: 90.2%', 1), ('High RAM usage detected: 89.0%', 1)]",False
