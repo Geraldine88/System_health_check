@@ -159,8 +159,7 @@ with log_container:
         )
 
 # ------------------------------------------------------------
-# Auto-refresh trigger (must run BEFORE UI finishes)
+# Auto-refresh every second (Cloud-safe)
 # ------------------------------------------------------------
-st_autorefresh = st.experimental_rerun
+st.experimental_set_query_params(refresh=str(time.time()))
 time.sleep(1)
-st_autorefresh()
