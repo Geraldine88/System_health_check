@@ -12,15 +12,20 @@ st.markdown(
     """
     <style>
 
-    /* Import Google Fonts */
+    /* -----------------------------------------------------------
+       IMPORT GOOGLE FONTS
+    ----------------------------------------------------------- */
     @import url('https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double+Ink:wght@100..900&family=Caveat:wght@400..700&display=swap');
 
-    /* Background with lavender gradient overlay */
+
+    /* -----------------------------------------------------------
+       BACKGROUND IMAGE + LAVENDER GRADIENT (more visible)
+    ----------------------------------------------------------- */
     .stApp {
         background:
             linear-gradient(
-                rgba(255, 255, 255, 0.45),
-                rgba(189, 178, 255, 0.45)
+                rgba(255, 255, 255, 0.15),
+                rgba(189, 178, 255, 0.15)
             ),
             url("assets/img.png");
         background-size: cover;
@@ -28,38 +33,84 @@ st.markdown(
         background-repeat: no-repeat;
     }
 
-    /* Title font */
-    h1 {
-        font-family: 'Bitcount Grid Double Ink', sans-serif;
-        color: #3A2E6E;
+
+    /* -----------------------------------------------------------
+       TITLE — FONT + CENTER + LAVENDER SHADOW + UNDERLINE GLOW
+    ----------------------------------------------------------- */
+    html, body, [class*="st-emotion-cache"] h1 {
+        font-family: 'Bitcount Grid Double Ink', sans-serif !important;
+        text-align: center !important;
+        color: #3A2E6E !important;
+
+        /* Lavender glow shadow */
+        text-shadow: 0px 0px 12px rgba(189, 178, 255, 0.8);
+
+        /* Elegant lavender underline */
+        border-bottom: 4px solid rgba(189, 178, 255, 0.9);
+        padding-bottom: 8px;
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+
+        /* Smooth fade-in animation */
+        animation: fadeInTitle 1.2s ease-in-out;
     }
 
-    /* Subheaders */
+    @keyframes fadeInTitle {
+        from { opacity: 0; transform: translateY(-10px); }
+        to   { opacity: 1; transform: translateY(0px); }
+    }
+
+
+    /* -----------------------------------------------------------
+       SUBHEADERS — MATCH TITLE FONT + SOFT SHADOW
+    ----------------------------------------------------------- */
     h2, h3, h4 {
-        color: #3A2E6E;
-        font-family: 'Bitcount Grid Double Ink', sans-serif;
+        color: #3A2E6E !important;
+        font-family: 'Bitcount Grid Double Ink', sans-serif !important;
+        text-shadow: 0px 0px 6px rgba(189, 178, 255, 0.4);
     }
 
-    /* Card overlay */
+
+    /* -----------------------------------------------------------
+       FROSTED GLASS CARDS (overlay)
+    ----------------------------------------------------------- */
     .overlay {
-        background: rgba(255, 255, 255, 0.55);
+        background: rgba(255, 255, 255, 0.35);
         padding: 20px;
-        border-radius: 12px;
-        color: #3A2E6E; /* readable deep lavender text */
+        border-radius: 16px;
+        color: #3A2E6E;
+
+        /* Frosted glass blur */
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+
+        /* Soft border */
+        border: 1px solid rgba(255, 255, 255, 0.4);
+
+        /* Smooth fade-in animation */
+        animation: fadeInCard 0.8s ease-in-out;
     }
 
-    /* Log text */
+    @keyframes fadeInCard {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0px); }
+    }
+
+
+    /* -----------------------------------------------------------
+       LOG TEXT — HANDWRITTEN FONT
+    ----------------------------------------------------------- */
     .log-entry {
         color: #3A2E6E;
         font-family: 'Caveat', cursive;
-        font-size: 1.1rem;
+        font-size: 1.2rem;
     }
 
     </style>
     """,
     unsafe_allow_html=True
 )
-
 # -------------------------------------------------------------------------------
 # PASTEL THEME COLORS (updated to white + lavender)
 # -------------------------------------------------------------------------------
