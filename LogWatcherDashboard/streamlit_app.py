@@ -4,13 +4,10 @@ import time
 import pandas as pd
 import numpy as np
 from datetime import datetime
-
-from pyarrow import timestamp
+from streamlit_autorefresh import st_autorefresh   # Cloud-safe auto-refresh
 
 # -------------------------------------------------------------------------------
-
 # PASTEL THEME COLORS
-
 # -------------------------------------------------------------------------------
 
 PASTEL_INFO = "#A8E6CF"      # mint
@@ -21,9 +18,7 @@ PASTEL_RAM = "#BDB2FF"       # lavender
 PASTEL_DISK = "#9BF6FF"      # teal
 
 # -------------------------------------------------------------------------------
-
 # PAGE CONFIGURATIONS
-
 # -------------------------------------------------------------------------------
 
 st.set_page_config(
@@ -34,10 +29,9 @@ st.title("Log Watcher Real-time Dashboard")
 st.caption("Balanced simulation • Soft pastel theme • Auto-updating every second")
 
 # -------------------------------------------------------------------------------
-
 # SESSION STATE INITIALIZATION
-
 # -------------------------------------------------------------------------------
+
 if 'logs' not in st.session_state:
     st.session_state.logs = []
 
@@ -60,9 +54,7 @@ if 'counts' not in st.session_state:
     st.session_state.counts = {"INFO": 0, "WARNING": 0, "ERROR": 0}
 
 # -------------------------------------------------------------------------------
-
 # SIMULATED LOG GENERATOR (BALANCED)
-
 # -------------------------------------------------------------------------------
 
 def generate_log():
@@ -70,7 +62,7 @@ def generate_log():
     ram = round(random.uniform(30, 90), 1)
     disk = round(random.uniform(20, 60), 1)
 
-    #Balanced probs
+    # Balanced probabilities
     level = random.choices(
         ['INFO', 'WARNING', 'ERROR'],
         weights=[80, 15, 5],
@@ -78,36 +70,32 @@ def generate_log():
     )[0]
 
     msg = f"CPU {cpu}%, RAM {ram}%, Disk {disk}%, Level {level}"
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    return timestamp, level, msg, cpu, ram, disk
+    return ts, level, msg, cpu, ram, disk
 
 # -------------------------------------------------------------------------------
-
 # NEW LOG ENTRY GENERATION
-
 # -------------------------------------------------------------------------------
 
 ts, level, msg, cpu, ram, disk = generate_log()
 
-#Updating the counts
+# Updating the counts
 st.session_state.counts[level] += 1
 
-# Now, we save the trends
+# Saving the trends
 st.session_state.warning_trends.append(st.session_state.counts['WARNING'])
 st.session_state.error_trends.append(st.session_state.counts['ERROR'])
 st.session_state.cpu_trend.append(cpu)
 st.session_state.ram_trend.append(ram)
 st.session_state.disk_trend.append(disk)
 
-# Save the logs
+# Save the logs (keep last 50)
 st.session_state.logs.append((ts, level, msg))
-st.session_state.logs = st.session_state.logs[-50:] # to store last 50 logs
+st.session_state.logs = st.session_state.logs[-50:]
 
 # -------------------------------------------------------------------------------
-
 # METRIC CARD - FIRST SECTION
-
 # -------------------------------------------------------------------------------
 
 st.subheader("System Metrics (Pastel Cards)")
@@ -116,15 +104,27 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     st.markdown(
-    f"""<div style="background-color:{PASTEL_INFO}; padding:20px; border-radius:10px;">
-                <h3 style="text-align:center;">INFO</h3>
-                <h1 style="text-align:center;">{st.session_state.counts['INFO']}</h1>
-                </div>
-            """,
-            unsafe_allow_html=True,
+        f"""
+        <div style="background-color:{PASTEL_INFO}; padding:20px; border-radius:10px;">
+            <h3 style="text-align:center;">INFO</h3>
+            <h1 style="text-align:center;">{st.session_state.counts['INFO']}</h1>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
 with col2:
+    st.markdown(
+        f"""
+        <div style="background-color:{PASTEL_WARN}; padding:20px; border-radius:10px;">
+            <h3 style="text-align:center;">WARNING</h3>
+            <h1 style="text-align:center;">{st.session_state.counts['WARNING']}</h1>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with col3:
     st.markdown(
         f"""
         <div style="background-color:{PASTEL_ERROR}; padding:20px; border-radius:10px;">
@@ -135,10 +135,26 @@ with col2:
         unsafe_allow_html=True,
     )
 
+# -------------------------------------------------------------------------------
+# REAL-TIME TREND GRAPH SECTION
+# -------------------------------------------------------------------------------
 
-# ------------------------------------------------------------
+st.subheader("Real-Time Trend Graphs")
+
+trend_df = pd.DataFrame({
+    "Warnings": st.session_state.warning_trends,
+    "Errors": st.session_state.error_trends,
+    "CPU": st.session_state.cpu_trend,
+    "RAM": st.session_state.ram_trend,
+    "Disk": st.session_state.disk_trend,
+})
+
+st.line_chart(trend_df, height=300)
+
+# -------------------------------------------------------------------------------
 # SECTION 3 — LIVE LOG FEED
-# ------------------------------------------------------------
+# -------------------------------------------------------------------------------
+
 st.subheader("Live Log Feed")
 
 log_container = st.container()
@@ -158,8 +174,8 @@ with log_container:
             unsafe_allow_html=True,
         )
 
-# ------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # Auto-refresh every second (Cloud-safe)
-# ------------------------------------------------------------
-st.experimental_set_query_params(refresh=str(time.time()))
-time.sleep(1)
+# -------------------------------------------------------------------------------
+
+st_autorefresh(interval=1000, limit=None, key="refresh")
