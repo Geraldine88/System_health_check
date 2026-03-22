@@ -15,7 +15,7 @@ YELLOW = "\033[93m"
 RED = "\033[91m"
 RESET = "\033[0m"
 
-LOG_PATH = "../system-health-checker/logs/sys-health-checker.log"
+LOG_PATH = "../../system-health-checker/logs/sys-health-checker.log"
 
 
 # ------------------------------------------------------------
@@ -112,7 +112,7 @@ def trigger_alert(level, ts, msg, counts):
 # Graph Saving
 # ------------------------------------------------------------
 def save_graph(filename):
-    graphs_dir = "graphs"
+    graphs_dir = "../graphs"
     os.makedirs(graphs_dir, exist_ok=True)
     path = os.path.join(graphs_dir, filename)
     plt.savefig(path)
