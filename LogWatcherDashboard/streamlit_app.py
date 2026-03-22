@@ -159,7 +159,8 @@ with log_container:
         )
 
 # ------------------------------------------------------------
-# Auto-refresh every second
+# Auto-refresh trigger (must run BEFORE UI finishes)
 # ------------------------------------------------------------
+st_autorefresh = st.experimental_rerun
 time.sleep(1)
-st.experimental_rerun()
+st_autorefresh()
