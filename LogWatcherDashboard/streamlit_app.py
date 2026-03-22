@@ -47,14 +47,14 @@ if 'warning_trends' not in st.session_state:
 if 'error_trends' not in st.session_state:
     st.session_state.error_trends = []
 
-if 'cpu_trends' not in st.session_state:
-    st.session_state.cpu_trends = []
-
-if 'disk_trends' not in st.session_state:
-    st.session_state.disk_trends = []
+if 'cpu_trend' not in st.session_state:
+    st.session_state.cpu_trend = []
 
 if 'ram_trend' not in st.session_state:
-    st.session_state.ram_trends = []
+    st.session_state.ram_trend = []
+
+if 'disk_trend' not in st.session_state:
+    st.session_state.disk_trend = []
 
 if 'counts' not in st.session_state:
     st.session_state.counts = {"INFO": 0, "WARNING": 0, "ERROR": 0}
@@ -96,9 +96,9 @@ st.session_state.counts[level] += 1
 # Now, we save the trends
 st.session_state.warning_trends.append(st.session_state.counts['WARNING'])
 st.session_state.error_trends.append(st.session_state.counts['ERROR'])
-st.session_state.cpu_trends.append(st.session_state.cpu)
-st.session_state.disk_trends.append(st.session_state.disk)
-st.session_state.ram_trends.append(st.session_state.ram)
+st.session_state.cpu_trend.append(cpu)
+st.session_state.ram_trend.append(ram)
+st.session_state.disk_trend.append(disk)
 
 # Save the logs
 st.session_state.logs.append((ts, level, msg))
