@@ -19,7 +19,7 @@ st.markdown(
 
 
     /* -----------------------------------------------------------
-       BACKGROUND IMAGE + LAVENDER GRADIENT (more visible)
+       BACKGROUND IMAGE + LAVENDER GRADIENT (visible)
     ----------------------------------------------------------- */
     .stApp {
         background:
@@ -35,24 +35,21 @@ st.markdown(
 
 
     /* -----------------------------------------------------------
-       TITLE — FONT + CENTER + LAVENDER SHADOW + UNDERLINE GLOW
+       TITLE — BOLD + CAPS + CENTERED (NO GLOW)
     ----------------------------------------------------------- */
     html, body, [class*="st-emotion-cache"] h1 {
         font-family: 'Bitcount Grid Double Ink', sans-serif !important;
         text-align: center !important;
         color: #3A2E6E !important;
 
-        /* Lavender glow shadow */
-        text-shadow: 0px 0px 12px rgba(189, 178, 255, 0.8);
+        font-weight: 900 !important;   /* BOLD */
+        text-transform: uppercase !important;  /* ALL CAPS */
 
-        /* Elegant lavender underline */
-        border-bottom: 4px solid rgba(189, 178, 255, 0.9);
         padding-bottom: 8px;
         width: fit-content;
         margin-left: auto;
         margin-right: auto;
 
-        /* Smooth fade-in animation */
         animation: fadeInTitle 1.2s ease-in-out;
     }
 
@@ -63,17 +60,16 @@ st.markdown(
 
 
     /* -----------------------------------------------------------
-       SUBHEADERS — MATCH TITLE FONT + SOFT SHADOW
+       SUBHEADERS — MATCH TITLE FONT
     ----------------------------------------------------------- */
     h2, h3, h4 {
         color: #3A2E6E !important;
         font-family: 'Bitcount Grid Double Ink', sans-serif !important;
-        text-shadow: 0px 0px 6px rgba(189, 178, 255, 0.4);
     }
 
 
     /* -----------------------------------------------------------
-       FROSTED GLASS CARDS (overlay)
+       FROSTED GLASS CARDS
     ----------------------------------------------------------- */
     .overlay {
         background: rgba(255, 255, 255, 0.35);
@@ -81,14 +77,11 @@ st.markdown(
         border-radius: 16px;
         color: #3A2E6E;
 
-        /* Frosted glass blur */
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
 
-        /* Soft border */
         border: 1px solid rgba(255, 255, 255, 0.4);
 
-        /* Smooth fade-in animation */
         animation: fadeInCard 0.8s ease-in-out;
     }
 
