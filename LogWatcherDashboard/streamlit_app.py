@@ -11,8 +11,13 @@ from datetime import datetime
 st.markdown(
     """
     <style>
+
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double+Ink:wght@100..900&family=Caveat:wght@400..700&display=swap');
+
+    /* Background with lavender gradient overlay */
     .stApp {
-        background: 
+        background:
             linear-gradient(
                 rgba(255, 255, 255, 0.45),
                 rgba(189, 178, 255, 0.45)
@@ -23,12 +28,33 @@ st.markdown(
         background-repeat: no-repeat;
     }
 
-    /* Card overlay for readability */
+    /* Title font */
+    h1 {
+        font-family: 'Bitcount Grid Double Ink', sans-serif;
+        color: #3A2E6E;
+    }
+
+    /* Subheaders */
+    h2, h3, h4 {
+        color: #3A2E6E;
+        font-family: 'Bitcount Grid Double Ink', sans-serif;
+    }
+
+    /* Card overlay */
     .overlay {
         background: rgba(255, 255, 255, 0.55);
         padding: 20px;
         border-radius: 12px;
+        color: #3A2E6E; /* readable deep lavender text */
     }
+
+    /* Log text */
+    .log-entry {
+        color: #3A2E6E;
+        font-family: 'Caveat', cursive;
+        font-size: 1.1rem;
+    }
+
     </style>
     """,
     unsafe_allow_html=True
