@@ -12,14 +12,20 @@ st.markdown(
     """
     <style>
     .stApp {
-        background-image: url("assets/img.png");
+        background: 
+            linear-gradient(
+                rgba(255, 255, 255, 0.45),
+                rgba(189, 178, 255, 0.45)
+            ),
+            url("assets/img.png");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
     }
-    /* Soft white overlay for readability */
+
+    /* Card overlay for readability */
     .overlay {
-        background: rgba(255, 255, 255, 0.65);
+        background: rgba(255, 255, 255, 0.55);
         padding: 20px;
         border-radius: 12px;
     }
@@ -49,7 +55,7 @@ st.set_page_config(
 )
 
 st.title("Log Watcher Real-time Dashboard")
-st.caption("White + Lavender Theme • Background Image • Pause/Resume/Single Refresh")
+st.caption("White + Lavender Theme --> Pause | Resume | Single Refresh")
 
 # -------------------------------------------------------------------------------
 # SESSION STATE INITIALIZATION
