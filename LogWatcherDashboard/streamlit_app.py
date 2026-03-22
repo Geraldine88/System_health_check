@@ -2,19 +2,42 @@ import streamlit as st
 import random
 import time
 import pandas as pd
-import numpy as np
 from datetime import datetime
 
 # -------------------------------------------------------------------------------
-# PASTEL THEME COLORS
+# BACKGROUND IMAGE (white + lavender theme overlay)
 # -------------------------------------------------------------------------------
 
-PASTEL_INFO = "#A8E6CF"      # mint
-PASTEL_WARN = "#FFD3B6"      # peach
-PASTEL_ERROR = "#FFAAA5"     # soft red
-PASTEL_CPU = "#A0C4FF"       # sky blue
-PASTEL_RAM = "#BDB2FF"       # lavender
-PASTEL_DISK = "#9BF6FF"      # teal
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-image: url("assets/img.png");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    /* Soft white overlay for readability */
+    .overlay {
+        background: rgba(255, 255, 255, 0.65);
+        padding: 20px;
+        border-radius: 12px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# -------------------------------------------------------------------------------
+# PASTEL THEME COLORS (updated to white + lavender)
+# -------------------------------------------------------------------------------
+
+PASTEL_INFO = "#FFFFFF"       # white
+PASTEL_WARN = "#E8D7FF"       # soft lavender
+PASTEL_ERROR = "#FFB3C6"      # soft rose red
+PASTEL_CPU = "#C8B6FF"        # lavender
+PASTEL_RAM = "#EDE7FF"        # lilac
+PASTEL_DISK = "#D0BCFF"       # muted lavender
 
 # -------------------------------------------------------------------------------
 # PAGE CONFIGURATIONS
@@ -24,33 +47,37 @@ st.set_page_config(
     page_title="Log Watcher Real-time Dashboard",
     layout="wide",
 )
+
 st.title("Log Watcher Real-time Dashboard")
-st.caption("Balanced simulation • Soft pastel theme • Auto-updating every second")
+st.caption("White + Lavender Theme • Background Image • Pause/Resume/Single Refresh")
 
 # -------------------------------------------------------------------------------
 # SESSION STATE INITIALIZATION
 # -------------------------------------------------------------------------------
 
-if 'logs' not in st.session_state:
+if "logs" not in st.session_state:
     st.session_state.logs = []
 
-if 'warning_trends' not in st.session_state:
+if "warning_trends" not in st.session_state:
     st.session_state.warning_trends = []
 
-if 'error_trends' not in st.session_state:
+if "error_trends" not in st.session_state:
     st.session_state.error_trends = []
 
-if 'cpu_trend' not in st.session_state:
+if "cpu_trend" not in st.session_state:
     st.session_state.cpu_trend = []
 
-if 'ram_trend' not in st.session_state:
+if "ram_trend" not in st.session_state:
     st.session_state.ram_trend = []
 
-if 'disk_trend' not in st.session_state:
+if "disk_trend" not in st.session_state:
     st.session_state.disk_trend = []
 
-if 'counts' not in st.session_state:
+if "counts" not in st.session_state:
     st.session_state.counts = {"INFO": 0, "WARNING": 0, "ERROR": 0}
+
+if "run_mode" not in st.session_state:
+    st.session_state.run_mode = "running"   # running | paused | single
 
 # -------------------------------------------------------------------------------
 # SIMULATED LOG GENERATOR (BALANCED)
@@ -61,9 +88,8 @@ def generate_log():
     ram = round(random.uniform(30, 90), 1)
     disk = round(random.uniform(20, 60), 1)
 
-    # Balanced probabilities
     level = random.choices(
-        ['INFO', 'WARNING', 'ERROR'],
+        ["INFO", "WARNING", "ERROR"],
         weights=[80, 15, 5],
         k=1
     )[0]
@@ -74,7 +100,25 @@ def generate_log():
     return ts, level, msg, cpu, ram, disk
 
 # -------------------------------------------------------------------------------
-# AUTO-REFRESH LOOP USING st.empty() (CLOUD-SAFE)
+# CONTROL BUTTONS (Pause, Resume, One-time Refresh)
+# -------------------------------------------------------------------------------
+
+colA, colB, colC = st.columns(3)
+
+with colA:
+    if st.button("⏸️ Pause"):
+        st.session_state.run_mode = "paused"
+
+with colB:
+    if st.button("▶️ Resume"):
+        st.session_state.run_mode = "running"
+
+with colC:
+    if st.button("🔄 One-time Refresh"):
+        st.session_state.run_mode = "single"
+
+# -------------------------------------------------------------------------------
+# AUTO-REFRESH LOOP (Cloud-safe using st.empty)
 # -------------------------------------------------------------------------------
 
 placeholder = st.empty()
@@ -82,38 +126,37 @@ placeholder = st.empty()
 while True:
     with placeholder.container():
 
+        # Only generate new data if running or single refresh
+        if st.session_state.run_mode in ["running", "single"]:
+            ts, level, msg, cpu, ram, disk = generate_log()
+
+            st.session_state.counts[level] += 1
+
+            st.session_state.warning_trends.append(st.session_state.counts["WARNING"])
+            st.session_state.error_trends.append(st.session_state.counts["ERROR"])
+            st.session_state.cpu_trend.append(cpu)
+            st.session_state.ram_trend.append(ram)
+            st.session_state.disk_trend.append(disk)
+
+            st.session_state.logs.append((ts, level, msg))
+            st.session_state.logs = st.session_state.logs[-50:]
+
+        # If single refresh, switch back to paused
+        if st.session_state.run_mode == "single":
+            st.session_state.run_mode = "paused"
+
         # -----------------------------------------------------------------------
-        # NEW LOG ENTRY GENERATION
+        # METRIC CARDS
         # -----------------------------------------------------------------------
 
-        ts, level, msg, cpu, ram, disk = generate_log()
-
-        # Updating the counts
-        st.session_state.counts[level] += 1
-
-        # Saving the trends
-        st.session_state.warning_trends.append(st.session_state.counts['WARNING'])
-        st.session_state.error_trends.append(st.session_state.counts['ERROR'])
-        st.session_state.cpu_trend.append(cpu)
-        st.session_state.ram_trend.append(ram)
-        st.session_state.disk_trend.append(disk)
-
-        # Save the logs (keep last 50)
-        st.session_state.logs.append((ts, level, msg))
-        st.session_state.logs = st.session_state.logs[-50:]
-
-        # -----------------------------------------------------------------------
-        # METRIC CARD - FIRST SECTION
-        # -----------------------------------------------------------------------
-
-        st.subheader("System Metrics (Pastel Cards)")
+        st.subheader("System Metrics (White + Lavender Cards)")
 
         col1, col2, col3 = st.columns(3)
 
         with col1:
             st.markdown(
                 f"""
-                <div style="background-color:{PASTEL_INFO}; padding:20px; border-radius:10px;">
+                <div class="overlay" style="background-color:{PASTEL_INFO};">
                     <h3 style="text-align:center;">INFO</h3>
                     <h1 style="text-align:center;">{st.session_state.counts['INFO']}</h1>
                 </div>
@@ -124,7 +167,7 @@ while True:
         with col2:
             st.markdown(
                 f"""
-                <div style="background-color:{PASTEL_WARN}; padding:20px; border-radius:10px;">
+                <div class="overlay" style="background-color:{PASTEL_WARN};">
                     <h3 style="text-align:center;">WARNING</h3>
                     <h1 style="text-align:center;">{st.session_state.counts['WARNING']}</h1>
                 </div>
@@ -135,7 +178,7 @@ while True:
         with col3:
             st.markdown(
                 f"""
-                <div style="background-color:{PASTEL_ERROR}; padding:20px; border-radius:10px;">
+                <div class="overlay" style="background-color:{PASTEL_ERROR};">
                     <h3 style="text-align:center;">ERROR</h3>
                     <h1 style="text-align:center;">{st.session_state.counts['ERROR']}</h1>
                 </div>
@@ -144,7 +187,7 @@ while True:
             )
 
         # -----------------------------------------------------------------------
-        # REAL-TIME TREND GRAPH SECTION
+        # REAL-TIME TREND GRAPHS
         # -----------------------------------------------------------------------
 
         st.subheader("Real-Time Trend Graphs")
@@ -160,7 +203,7 @@ while True:
         st.line_chart(trend_df, height=300)
 
         # -----------------------------------------------------------------------
-        # SECTION 3 — LIVE LOG FEED
+        # LIVE LOG FEED
         # -----------------------------------------------------------------------
 
         st.subheader("Live Log Feed")
@@ -173,12 +216,15 @@ while True:
             )
             st.markdown(
                 f"""
-                <div style="background-color:{color}; padding:10px; border-radius:8px; margin-bottom:5px;">
+                <div class="overlay" style="background-color:{color}; margin-bottom:5px;">
                     <b>{ts}</b> — <b>{level}</b> — {msg}
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
 
-    # Sleep 1 second before refreshing the placeholder
-    time.sleep(1)
+    # Only auto-refresh if running
+    if st.session_state.run_mode == "running":
+        time.sleep(1)
+    else:
+        break
