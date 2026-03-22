@@ -181,7 +181,7 @@ while True:
         # METRIC CARDS
         # -----------------------------------------------------------------------
 
-        st.subheader("System Metrics (White + Lavender Cards)")
+        st.subheader("System Metrics")
 
         col1, col2, col3 = st.columns(3)
 
