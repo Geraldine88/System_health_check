@@ -279,6 +279,68 @@ while True:
         st.line_chart(trend_df, height=300)
 
         # -----------------------------------------------------------------------
+        # AI-STYLE INSIGHTS
+        # -----------------------------------------------------------------------
+
+        st.subheader("AI Insights")
+
+
+        def generate_insights():
+            insights = []
+
+            # CPU Trend
+            if len(st.session_state.cpu_trend) > 10:
+                if st.session_state.cpu_trend[-1] > st.session_state.cpu_trend[-10]:
+                    insights.append("CPU usage is trending upward.")
+                else:
+                    insights.append("CPU usage is stable or decreasing.")
+
+            # RAM Trend
+            if len(st.session_state.ram_trend) > 10:
+                if st.session_state.ram_trend[-1] > st.session_state.ram_trend[-10]:
+                    insights.append("RAM usage is increasing over time.")
+                else:
+                    insights.append("RAM usage is stable.")
+
+            # Disk Trend
+            if len(st.session_state.disk_trend) > 10:
+                if st.session_state.disk_trend[-1] > st.session_state.disk_trend[-10]:
+                    insights.append("Disk usage is slowly rising.")
+                else:
+                    insights.append("Disk usage remains consistent.")
+
+            # Warning Rate
+            if len(st.session_state.warning_trends) > 10:
+                if st.session_state.warning_trends[-1] > st.session_state.warning_trends[-10]:
+                    insights.append("Warning frequency has increased recently.")
+                else:
+                    insights.append("Warning frequency is stable.")
+
+            # Error Rate
+            if len(st.session_state.error_trends) > 10:
+                if st.session_state.error_trends[-1] > st.session_state.error_trends[-10]:
+                    insights.append("Error rate is rising — monitor closely.")
+                else:
+                    insights.append("Error rate is stable.")
+
+            return insights
+
+
+        insights = generate_insights()
+
+        for insight in insights:
+            st.markdown(
+                f"""
+                <div class="overlay" style="margin-bottom: 8px;">
+                    <b>• {insight}</b>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+
+
+        # -----------------------------------------------------------------------
         # LIVE LOG FEED
         # -----------------------------------------------------------------------
 
