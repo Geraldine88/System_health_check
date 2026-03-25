@@ -5,7 +5,7 @@ import pandas as pd
 from datetime import datetime
 from utils.parser import parse_log, extract_metrics
 
-LOG_PATH = "../../system-health-checker/logs/sys-health-checker.log"
+LOG_PATH = "system-health-checker/logs/sys-health-checker.log"
 
 # -------------------------------------------------------------------------------
 # BACKGROUND IMAGE (white + lavender theme overlay)
