@@ -236,7 +236,10 @@ while True:
                 continue
 
             ts, level, msg = parse_log(line)
-            cpu, ram, disk = extract_metrics(msg)
+            try:
+                cpu, ram, disk = extract_metrics(msg)
+            except:
+                continue
 
             st.session_state.counts[level] += 1
 
