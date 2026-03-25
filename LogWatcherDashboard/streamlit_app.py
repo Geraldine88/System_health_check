@@ -4,6 +4,10 @@ import time
 import pandas as pd
 from datetime import datetime
 
+from django.contrib.gis.gdal.prototypes.ds import get_next_feature
+
+from LogWatcherDashboard.utils.parser import extract_metrics
+
 # -------------------------------------------------------------------------------
 # BACKGROUND IMAGE (white + lavender theme overlay)
 # -------------------------------------------------------------------------------
@@ -176,6 +180,16 @@ def generate_log():
     return ts, level, msg, cpu, ram, disk
 
 # -------------------------------------------------------------------------------
+# REAL LOG READER
+# -------------------------------------------------------------------------------
+def read_new_log_lines(log_path, last_position):
+    with open(log_path, "r") as f:
+        f.seek(last_position)
+        newLines = f.readlines()
+        new_position = f.tell()
+    return newLines, new_position
+
+# -------------------------------------------------------------------------------
 # CONTROL BUTTONS (Pause, Resume, One-time Refresh)
 # -------------------------------------------------------------------------------
 
@@ -204,7 +218,10 @@ while True:
 
         # Only generate new data if running or single refresh
         if st.session_state.run_mode in ["running", "single"]:
-            ts, level, msg, cpu, ram, disk = generate_log()
+            # ts, level, msg, cpu, ram, disk = generate_log()
+            line = get_next_line_from_log_file()
+            ts, level, msg = parse_log(line)
+            cpu, ram, disk = extract_metrics(msg)
 
             st.session_state.counts[level] += 1
 
@@ -337,8 +354,6 @@ while True:
                 """,
                 unsafe_allow_html=True
             )
-
-
 
         # -----------------------------------------------------------------------
         # LIVE LOG FEED
