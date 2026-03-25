@@ -3,7 +3,7 @@ import random
 import time
 import pandas as pd
 from datetime import datetime
-from LogWatcherDashboard.utils.parser import parse_log, extract_metrics
+from utils.parser import parse_log, extract_metrics
 
 # from LogWatcherDashboard.utils.parser import extract_metrics
 
