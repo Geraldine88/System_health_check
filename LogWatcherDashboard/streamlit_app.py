@@ -233,6 +233,11 @@ while True:
                     continue
 
                 parsed = parse_log(line)
+                if not parsed or len(parsed) != 3:
+                    continue
+
+                ts, level, msg = parsed
+
                 if not parsed:
                     continue
 
