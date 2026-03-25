@@ -8,25 +8,50 @@ import logging # to log in data
 import time
 import schedule
 from logging.handlers import RotatingFileHandler
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+main_log_path = os.path.join(BASE_DIR, "logs/sys-health-checker.log")
+dashboard_log_path = os.path.join(BASE_DIR, "../LogWatcherDashboard/logs/sys-health-checker.log")
 
 print("===========================================================================")
 print(" GLOBAL LOG CONFIG")
 
-logger = logging.getLogger()
+logger = logging.getLogger("health_checker")
 logger.setLevel(logging.INFO)
 
-handler = RotatingFileHandler(
-    'logs/sys-health-checker.log',
+# handler = RotatingFileHandler(
+#     '../LogWatcherDashboard/logs/sys-health-checker.log',
+#     'logs/sys-health-checker.log',
+#     maxBytes=1024*1024,
+#     backupCount=5,
+# )
+
+# Handler 1 for the original log file
+handler_main = RotatingFileHandler(
+    main_log_path,
+    maxBytes=10485760,
+    backupCount=5,
+)
+
+os.makedirs(os.path.dirname(dashboard_log_path), exist_ok=True)
+# Handler 2 for streamlit app
+handler_dashboard = RotatingFileHandler(
+    dashboard_log_path,
     maxBytes=1024*1024,
     backupCount=5,
 )
 
+
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
+handler_main.setFormatter(formatter)
+handler_dashboard.setFormatter(formatter)
 
 # IMPORTANT FIX: Prevent duplicate handlers
 if not logger.handlers:
-    logger.addHandler(handler)
+    logger.addHandler(handler_main)
+    logger.addHandler(handler_dashboard)
 
 print("===============================================================================")
 
@@ -41,7 +66,7 @@ def sys_metrics():
 
 #creating a Log file
 def log_metrics(cpu, ram, disk):
-    logging.info(f"CPU Usage {cpu}%, RAM Usage {ram}%, Disk Usage {disk}%")
+    logger.info(f"CPU Usage {cpu}%, RAM Usage {ram}%, Disk Usage {disk}%")
     # logging.basicConfig(
     #     filename='logs/sys_health.log',
     #     level=logging.INFO,
@@ -54,13 +79,13 @@ def log_metrics(cpu, ram, disk):
 #Threshold alerts
 def thresh_alerts(cpu, ram, disk):
     if cpu > CPU_THESH:
-        logging.warning(f"High CPU usage detected: {cpu}%")
+        logger.warning(f"High CPU usage detected: {cpu}%")
 
     if ram > RAM_THESH:
-        logging.warning(f"High RAM usage detected: {ram}%")
+        logger.warning(f"High RAM usage detected: {ram}%")
 
     if disk > DISK_THESH:
-        logging.warning(f"High disk usage detected: {disk}%")
+        logger.warning(f"High disk usage detected: {disk}%")
 
 # Ultimate system
 def sys_main():
@@ -87,6 +112,8 @@ if __name__ == '__main__':
         schedule.run_pending()
         time.sleep(1)
         #sys_main()
+
+print("Dashboard log path:", dashboard_log_path)
 
 # logging → a built‑in tool for writing logs
 # subprocess → a way to run system commands
