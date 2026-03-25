@@ -183,9 +183,12 @@ def generate_log():
 # -------------------------------------------------------------------------------
 def read_new_log_lines():
     log_path = LOG_PATH
+
+    # Initializing pointer
     if "log_position" not in st.session_state:
         st.session_state.log_position = 0
 
+    # reading 1 new line
     with open(log_path, "r") as f:
         f.seek(st.session_state.log_position)
         line = f.readline()
@@ -224,6 +227,14 @@ while True:
         if st.session_state.run_mode in ["running", "single"]:
             # ts, level, msg, cpu, ram, disk = generate_log()
             line = read_new_log_lines()
+
+            #Skipping empty/partial lines
+            if not line or not line.strip():
+                continue
+            parsed = parse_log(line)
+            if not parsed:
+                continue
+
             ts, level, msg = parse_log(line)
             cpu, ram, disk = extract_metrics(msg)
 
