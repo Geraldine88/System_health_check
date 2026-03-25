@@ -231,11 +231,13 @@ while True:
             #Skipping empty/partial lines
             if not line or not line.strip():
                 continue
+
             parsed = parse_log(line)
             if not parsed:
                 continue
 
-            ts, level, msg = parse_log(line)
+            ts, level, msg = parsed
+
             try:
                 cpu, ram, disk = extract_metrics(msg)
             except:
