@@ -5,7 +5,7 @@ import pandas as pd
 from datetime import datetime
 from utils.parser import parse_log, extract_metrics
 
-# from LogWatcherDashboard.utils.parser import extract_metrics
+LOG_PATH = "../../system-health-checker/logs/sys-health-checker.log"
 
 # -------------------------------------------------------------------------------
 # BACKGROUND IMAGE (white + lavender theme overlay)
@@ -181,12 +181,17 @@ def generate_log():
 # -------------------------------------------------------------------------------
 # REAL LOG READER
 # -------------------------------------------------------------------------------
-def read_new_log_lines(log_path, last_position):
+def read_new_log_lines():
+    log_path = LOG_PATH
+    if "log_position" not in st.session_state:
+        st.session_state.log_position = 0
+
     with open(log_path, "r") as f:
-        f.seek(last_position)
-        newLines = f.readlines()
-        new_position = f.tell()
-    return newLines, new_position
+        f.seek(st.session_state.log_position)
+        line = f.readline()
+        st.session_state.log_position = f.tell()
+        return line
+
 
 # -------------------------------------------------------------------------------
 # CONTROL BUTTONS (Pause, Resume, One-time Refresh)
@@ -218,7 +223,7 @@ while True:
         # Only generate new data if running or single refresh
         if st.session_state.run_mode in ["running", "single"]:
             # ts, level, msg, cpu, ram, disk = generate_log()
-            line = get_next_line_from_log_file()
+            line = read_new_log_lines()
             ts, level, msg = parse_log(line)
             cpu, ram, disk = extract_metrics(msg)
 
