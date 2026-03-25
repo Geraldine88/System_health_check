@@ -184,16 +184,15 @@ def generate_log():
 def read_new_log_lines():
     log_path = LOG_PATH
 
-    # Initializing pointer
     if "log_position" not in st.session_state:
         st.session_state.log_position = 0
 
-    # reading 1 new line
     with open(log_path, "r") as f:
         f.seek(st.session_state.log_position)
-        line = f.readline()
+        lines = f.readlines()
         st.session_state.log_position = f.tell()
-        return line
+
+    return lines
 
 
 # -------------------------------------------------------------------------------
@@ -226,33 +225,32 @@ while True:
         # Only generate new data if running or single refresh
         if st.session_state.run_mode in ["running", "single"]:
             # ts, level, msg, cpu, ram, disk = generate_log()
-            line = read_new_log_lines()
+            lines = read_new_log_lines()
 
-            #Skipping empty/partial lines
-            if not line or not line.strip():
-                continue
+            for line in lines:
 
-            parsed = parse_log(line)
-            if not parsed:
-                continue
+                if not line or not line.strip():
+                    continue
 
-            ts, level, msg = parsed
+                parsed = parse_log(line)
+                if not parsed:
+                    continue
 
-            try:
-                cpu, ram, disk = extract_metrics(msg)
-            except:
-                continue
+                ts, level, msg = parsed
 
-            st.session_state.counts[level] += 1
+                try:
+                    cpu, ram, disk = extract_metrics(msg)
+                except:
+                    continue
 
-            st.session_state.warning_trends.append(st.session_state.counts["WARNING"])
-            st.session_state.error_trends.append(st.session_state.counts["ERROR"])
-            st.session_state.cpu_trend.append(cpu)
-            st.session_state.ram_trend.append(ram)
-            st.session_state.disk_trend.append(disk)
-
-            st.session_state.logs.append((ts, level, msg))
-            st.session_state.logs = st.session_state.logs[-50:]
+                st.session_state.counts[level] += 1
+                st.session_state.warning_trends.append(st.session_state.counts["WARNING"])
+                st.session_state.error_trends.append(st.session_state.counts["ERROR"])
+                st.session_state.cpu_trend.append(cpu)
+                st.session_state.ram_trend.append(ram)
+                st.session_state.disk_trend.append(disk)
+                st.session_state.logs.append((ts, level, msg))
+                st.session_state.logs = st.session_state.logs[-50:]
 
         # If single refresh, switch back to paused
         if st.session_state.run_mode == "single":
